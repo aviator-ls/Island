@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <context:component-scan base-package="com.aviator.island.controller"/>
+
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
+    <!-- JSON转换格式 -->
+    <bean id="conversionService"
+          class="org.springframework.context.support.ConversionServiceFactoryBean"/>
+
+    <mvc:annotation-driven conversion-service="conversionService">
+        <mvc:message-converters>
+            <ref bean="fastJsonHttpMessageConverter"></ref>
+        </mvc:message-converters>
+    </mvc:annotation-driven>
+
+    <bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter">
+        <property name="supportedMediaTypes">
+            <list>
+                <value>application/json;charset=UTF-8</value>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+        <!--<property name="fastJsonConfig" ref="fastJsonConfig"/>-->
+    </bean>
+
+    <!--<bean id="fastJsonConfig" class="com.alibaba.fastjson.support.config.FastJsonConfig">-->
+        <!--<property name="serializerFeatures">-->
+            <!--<list>-->
+                <!--<value>WriteNullStringAsEmpty</value>-->
+                <!--<value>QuoteFieldNames</value>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          p:prefix="/view/"
+          p:suffix=".html" p:order="10"/>
+
+    <!-- FreeMarker模板路径 -->
+    <bean id="freemarkerConfig"
+          class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <!--<property name="freemarkerSettings" ref="freemarkerConfiguration"/>-->
+        <property name="templateLoaderPath">
+            <value>WEB-INF/freemarker/templates</value>
+        </property>
+        <!--<property name="configLocation">-->
+        <!--<value></value>-->
+        <!--</property>-->
+        <property name="freemarkerVariables">
+            <map>
+                <entry key="xml_escape" value-ref="fmXmlEscape"/>
+                <entry key="html_escape" value-ref="fmHtmlEscape"/>
+                <entry key="ctx" value="/hello/back"/>
+            </map>
+        </property>
+        <property name="defaultEncoding">
+            <value>utf-8</value>
+        </property>
+    </bean>
+    <bean id="fmXmlEscape" class="freemarker.template.utility.XmlEscape"/>
+    <bean id="fmHtmlEscape" class="freemarker.template.utility.HtmlEscape"/>
+
+    <!-- 配置freeMarker视图解析器,order必须比InternalResourceViewResolver小，因为AbstractUrlBasedView的checkResource()方法永远返回true -->
+    <bean class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.freemarker.FreeMarkerView"/>
+        <property name="contentType" value="text/html; charset=utf-8"/>
+        <property name="suffix" value=".ftl"/>
+        <property name="order" value="1"/>
+    </bean>
+
+    <mvc:resources mapping="/view/desk/**" location="/static/desk/view/"/>
+    <mvc:resources mapping="/fonts/**" location="/static/desk/fonts/"/>
+    <mvc:resources mapping="/img/**" location="/static/desk/img/"/>
+    <mvc:resources mapping="/css/**" location="/static/desk/css/"/>
+    <mvc:resources mapping="/js/**" location="/static/desk/js/"/>
+    <mvc:resources mapping="/lang/**" location="/static/desk/lang/"/>
+    <mvc:resources mapping="/upload/img/postContentImg/**" location="/upload/img/postContentImg/"/>
+    <mvc:resources mapping="/back/img/**" location="/static/back/img/"/>
+    <mvc:resources mapping="/back/css/**" location="/static/back/css/"/>
+    <mvc:resources mapping="/back/js/**" location="/static/back/js/"/>
+    <mvc:resources mapping="/back/font/**" location="/static/back/js/font/"/>
+
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+          p:maxUploadSize="5242880"/><!-- 5M -->
+
+</beans>

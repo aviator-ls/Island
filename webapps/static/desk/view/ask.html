@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>ask</title>
+    <link rel="stylesheet" href="../../css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="../../css/blog.css"/>
+    <link rel="stylesheet" href="../../css/common.css"/>
+</head>
+<body>
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="javascript:void(0);" class="breadcrumbs-home">主页</a></li>
+        <li><a href="javascript:void(0);" class="breadcrumbs-post">问答</a></li>
+        <li class="active">问题</li>
+    </ol>
+    <div class="blog-post" style="border-bottom:1px solid #9d9d9d">
+        <!--<h2 class="blog-post-title">Sample blog post</h2>-->
+        <!--<p class="blog-post-meta">January 1, 2014 by <a href="#">Mark</a></p>-->
+        <!--<div>This blog post shows a few different types of content that's supported and styled with-->
+        <!--<br>-->
+        <!--Bootstrap. Basic typography, images, and code are all supported-->
+        <!--</div>-->
+        <!--<p class="blog-post-meta"></p>-->
+    </div>
+    <!-- 回复 -->
+    <div id="answerPageList">
+        <!--<h3>评论</h3>-->
+        <!--<div>-->
+        <!--<div class="panel panel-default">-->
+        <!--<div class="panel-body">-->
+        <!--Panel content-->
+        <!--</div>-->
+        <!--<div class="panel-heading">-->
+
+        <!--</div>-->
+        <!--</div>-->
+        <!--</div>-->
+        <!--<div id="pagination" class="pagination"></div>-->
+    </div>
+
+    <div style="margin-top: 20px">
+        <textarea id="answerContent" style="width: 100%;height: 90px" placeholder="说点什么吧..." data-toggle="tooltip"
+                  data-placement="bottom"
+                  title="内容为空"></textarea>
+    </div>
+    <h4></h4>
+    <button type="button" class="btn btn-info" style="float: right" onclick="answer()">回答</button>
+</div>
+</body>
+<script src="../../js/jquery-3.3.1.min.js"></script>
+<script src="../../js/bootstrap.min.js"></script>
+<script src="../../js/common.js"></script>
+<script>
+    $(function () {
+        ask();
+        answerList(defaultPageNum);
+    });
+
+    function ask(){
+        var id = getAskId();
+        $.ajax({
+            url: baseUrl + '/api/ask/' + id,
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    var contentHtml = '';
+                    var ask = res.data;
+                    var title = ask.title;
+                    var content = ask.content;
+                    var userName = ask.askUser.nickName;
+                    var updateTime = ask.updateTime;
+                    var formatUpdateTime = millisecondToDate(updateTime);
+                    if (isNotBlank(content)) {
+                        content = HtmlUtil.htmlDecode(content);
+                    }
+                    contentHtml += '<h2 class="blog-post-title">' + title + '</h2>'
+                        + '<p class="blog-post-meta"><a href="#">' + userName + '</a>提问于'
+                        + formatUpdateTime + '</p><div>' + content + '</div>';
+                    $('.blog-post').html(contentHtml);
+                } else {
+                    var msg = res.responseMsg;
+                    dialogModal(msg, 2000);
+                }
+            }
+        })
+    }
+
+    function answerList(pageNum) {
+        var answerHtml = '';
+        var askId = getAskId();
+        var url = baseUrl + '/api/answer/askId/' + askId;
+        var data = {
+            pageNum: pageNum,
+            pageSize: defaultPageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        var callback = function callback(page) {
+            var answerSet = page.data;
+            var pageTotal = page.pageCount;
+            var totalCount = page.totalCount;
+            if (isNotBlank(answerSet)) {
+                answerHtml += '<div style="border-bottom:1px solid #9d9d9d"><h3>回复<span class="badge">' + totalCount + '</span></h3>';
+                $.each(answerSet, function (index, answer) {
+                    var content = answer.content;
+                    var user = answer.answerUser;
+                    var createTime = answer.createTime;
+                    var formatCreateTime = millisecondToDate(createTime);
+                    var nickName = user.nickName;
+                    var profilePicture = isBlank(user.profilePicture) ? defaultProfilePic : user.profilePicture;
+                    answerHtml += '<div class="panel panel-default"><div class="panel-body"><div>'
+                        + content + '</div><div style="text-align: right;"><img src="' + profilePicture + '" class="profile-picture">&nbsp;'
+                        + nickName + '&nbsp;回答于&nbsp;' + formatCreateTime + '</div></div></div>'
+                });
+                if (totalCount > defaultPageSize) {
+                    answerHtml += '<div id="pagination" class="pagination"></div>';
+                }
+                answerHtml += '</div>';
+                $('#answerPageList').html(answerHtml);
+                if (totalCount > defaultPageSize) {
+                    pagination($('#pagination'), pageNum, pageTotal, defaultShowPageCount, 'answerList');
+                }
+            }
+        };
+        ajaxPost(url, data, callback);
+    }
+
+    function answer() {
+        var answer = $('#answerContent');
+        var answerContent = answer.val();
+        if (isBlank(answerContent)) {
+            fade(answer);
+            tooltipFade(answer);
+            return;
+        }
+        var url = baseUrl + '/api/answer';
+        var data = {
+            content: answerContent,
+            askId: getAskId()
+        };
+        ajaxPost(url, data, successCallBack);
+    }
+
+    var successCallBack = function () {
+        dialogModal('提问回答成功！', 1000, reloadCallback);
+    };
+
+    var reloadCallback = function () {
+        window.location.reload();
+    };
+
+    function getAskId() {
+        var url = window.location.href;
+        return url.substring(url.lastIndexOf('/') + 1);
+    }
+</script>
+</html>

@@ -1,0 +1,50 @@
+<nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <!-- The mobile navbar-toggle button can be safely removed since you do not need it in a non-responsive implementation -->
+            <a id="projectHome" class="navbar-brand breadcrumbs-home" href="javascript:void(0);">Project name</a>
+        </div>
+        <!-- Note that the .navbar-collapse and .collapse classes have been removed from the #navbar -->
+        <div id="navbar">
+            <ul class="nav navbar-nav">
+                <li><a id="home" href="javascript:void(0);">主页</a></li>
+                <li><a id="toPostList" href="javascript:void(0);">博客</a></li>
+                <li><a id="toAskList" href="javascript:void(0);">问答</a></li>
+                <li class="dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">Action</a></li>
+                        <li><a href="#">Another action</a></li>
+                        <li><a href="#">Something else here</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li class="dropdown-header">Nav header</li>
+                        <li><a href="#">Separated link</a></li>
+                        <li><a href="#">One more separated link</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <form class="navbar-form navbar-left">
+                <div class="form-group">
+                    <input type="text" class="form-control" placeholder="搜文章或问题...">
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="javascript:void(0);" id="toPost">写博客</a></li>
+                <li><a href="javascript:void(0);" id="toAsk">去提问</a></li>
+                <li><a href="javascript:void(0);" id="toLogin">登 录</a></li>
+                <li><a href="javascript:void(0);" id="toRegister">注 册</a></li>
+                <li class="dropdown">
+                    <a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" id="user"></a>
+                    <ul class="dropdown-menu">
+                        <li><span id="credit"></span>积分</li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="javascript:void(0);">个人中心</a><a href="javascript:void(0);">账户设置</a></li>
+                        <li role="separator" class="divider"></li>
+                        <li><a href="javascript:void(0);" onclick="outLogin()">退出</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div>
+</nav>

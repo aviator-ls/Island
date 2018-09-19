@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>index</title>
+    <link rel="stylesheet" href="css/common.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/carousel.css"/>
+</head>
+<body>
+<div class="container">
+    <div class="col-sm-2">
+        <div id="boardTree"></div>
+    </div>
+
+    <div id="myCarousel" class="carousel slide col-sm-8">
+        <!-- 轮播（Carousel）指标 -->
+        <ol id="carouselIndicators" class="carousel-indicators">
+        </ol>
+        <!-- 轮播（Carousel）项目 -->
+        <div id="carouselInner" class="carousel-inner">
+        </div>
+        <!-- 轮播（Carousel）导航 -->
+        <a class="carousel-control left" href="#myCarousel"
+           data-slide="prev"></a>
+        <a class="carousel-control right" href="#myCarousel"
+           data-slide="next"></a>
+    </div>
+</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/bootstrap-treeview.js"></script>
+<script src="js/common.js"></script>
+<script>
+    $(function () {
+        $.ajax({
+            url: baseUrl + '/api/index/pic/carousel/list',
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    var indexPics = res.data;
+                    if (isNotBlank(indexPics)) {
+                        var carouselIndicators = "";
+                        var carouselInner = "";
+                        $.each(indexPics, function (index, value) {
+                            var imgPath = baseUrl + 'img/' + value.imgPath;
+                            var alt = value.alt;
+                            if (index == 0) {
+                                carouselIndicators += '<li data-slide-to="0" data-target="#myCarousel" class="active"></li>';
+                                carouselInner += '<div class="item active"><img src="' + imgPath + '" ';
+                            } else {
+                                carouselIndicators += '<li data-slide-to="' + index + '" data-target="#myCarousel"></li>';
+                                carouselInner += '<div class="item"><img src="' + imgPath + '" ';
+                            }
+                            if (isNotBlank(alt)) {
+                                carouselInner += 'alt="' + alt + '"';
+                            } else {
+                                carouselInner += 'alt=pic';
+                            }
+                            carouselInner += '></div>';
+                        });
+                        $('#carouselIndicators').html(carouselIndicators);
+                        $('#carouselInner').html(carouselInner);
+                    }
+                } else {
+                    var msg = res.responseMsg;
+                    dialogModal(msg, 2000);
+                }
+            }
+        });
+        $(".carousel").carousel({
+            interval: 3000 //每隔3秒自动轮播
+        });
+        boardTree();
+    });
+
+
+    function boardTree() {
+        $.ajax({
+            url: baseUrl + '/api/board/list',
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    var boards = res.data;
+                    if(isNotBlank(boards)){
+                        var tree = convertBoardToTree(boards);
+                        $('#boardTree').treeview(
+                            {
+                                data: tree,
+                                enableLinks: true,
+                                levels: 1,
+                                showTags: true
+                            }
+                        );
+                    }
+                } else {
+                    var msg = res.responseMsg;
+                    dialogModal(msg, 2000);
+                }
+            }
+        })
+    }
+
+    function convertBoardToTree(nodes) {
+        var gc = function (parentid) {
+            var array = [];
+            for (var i = 0; i < nodes.length; i++) {
+                var node = nodes[i];
+                if (node.parentBoardId == parentid) {
+                    var text = node.name;
+                    var level = node.level;
+                    var href = null;
+                    var nodess = null;
+                    if (level == 3) {
+                        href = baseUrl + '/api/board/' + node.id;
+                    }
+                    if (level != 3) {
+                        nodess = gc(node.id);
+                    }
+                    array.push(new Tree(text, null, null, href, null, null, null, null, null, nodess));
+                }
+            }
+            return array;
+        };
+        return gc(undefined);
+    }
+
+</script>
+</html>

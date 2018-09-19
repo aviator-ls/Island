@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div onclick="testAjaxGet()">ajaxGet</div>
+<div onclick="testAjaxPost()">ajaxPost</div>
+<div id="content"></div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+    function testAjaxGet() {
+        $.ajax({
+            url : baseUrl + "/test/ajax/get",
+            success:function (data) {
+                $("#content").text(toString(data));
+            }
+        })
+    }
+
+    function testAjaxPost(){
+        $.ajax({
+            url : baseUrl + "/test/ajax/post",
+            contentType: "application/json",
+            type : "post",
+            data : toJson({
+                id : "id",
+                name : "userName",
+                password : "userPw"
+            }),
+            success:function (data) {
+                $("#content").text(toString(data));
+            }
+        })
+    }
+
+    function toString(data){
+        return data.responseCode + "," + data.responseMsg + "," + data.data;
+    }
+</script>
+</html>

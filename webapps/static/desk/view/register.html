@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>register</title>
+    <link rel="stylesheet" href="css/common.css"/>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/signin.css"/>
+</head>
+<body>
+<div class="container">
+    <form class="form-signin">
+        <h2 class="form-signin-heading">注册</h2>
+        <label for="userName" class="sr-only">user name</label>
+        <input type="email" id="userName" class="form-control" placeholder="用户名" data-toggle="tooltip"
+               data-placement="bottom"
+               title="用户名不可为空" required autofocus>
+        <label for="userPassword" class="sr-only">Password</label>
+        <input type="password" id="userPassword" class="form-control" placeholder="密码" data-toggle="tooltip"
+               data-placement="bottom"
+               title="密码不可为空" required>
+        <span id="namePsError" class="signErr"></span>
+        <button class="btn btn-lg btn-primary btn-block" type="submit" onclick="return submitForm()">register</button>
+    </form>
+</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+    function submitForm() {
+        var name = $('#userName').val();
+        var password = $('#userPassword').val();
+        if (isBlank(name)) {
+            $('#userName').tooltip('show');
+            setTimeout(function(){$('#userName').tooltip('hide')}, 1000);
+            return false;
+        }
+        if (isBlank(password)) {
+            $('#userPassword').tooltip('show');
+            setTimeout(function(){$('#userPassword').tooltip('hide')}, 1000);
+            return false;
+        }
+        $.ajax({
+            url: baseUrl + '/api/user/register',
+            type: 'post',
+            contentType: "application/json",
+            data: toJson({
+                userName: name,
+                password: password
+            }),
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    window.open(baseUrl + '/index', '_self');
+                } else {
+                    var msg = res.responseMsg;
+                    $('#namePsError').text(msg).css('visibility', 'visible');
+                }
+            }
+        });
+        return false;
+    }
+</script>
+</html>

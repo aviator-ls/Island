@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>post_list</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/summernote.css"/>
+    <link rel="stylesheet" href="css/square/green.css"/>
+    <link rel="stylesheet" href="css/common.css"/>
+</head>
+<body>
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="javascript:void(0);" class="breadcrumbs-home">主页</a></li>
+        <li class="active">博客</li>
+    </ol>
+    <div>
+        <ul id="postMenu" class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="javascript:void(0);" onclick="switchActive(this)">最新文章</a>
+            </li>
+            <li role="presentation"><a href="javascript:void(0);" onclick="switchActive(this)">热门文章</a></li>
+            <li role="presentation"><a href="javascript:void(0);" onclick="switchActive(this)">精品文章</a></li>
+        </ul>
+    </div>
+
+    <div id="postList" class="list-group">
+        <!--<a href="#" class="list-group-item">-->
+        <!--<h4 class="list-group-item-heading">List group item heading</h4>-->
+        <!--<p><span style="color: #01AAED">admin</span>&nbsp;最近更新于&nbsp;<span style="color: gray">2018-09-07</span></p>-->
+        <!--<p class="list-group-item-text">...</p>-->
+        <!--</a>-->
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+    var showPageCount = defaultShowPageCount;
+    $(function () {
+        postList(1);
+    });
+
+    // 菜单切换事件
+    function switchActive(tag) {
+        $('#postMenu').children().removeClass('active');
+        $(tag).parent().addClass('active');
+        postList(1);
+    }
+
+    function postList(pageNum) {
+        var childrenTag = $('#postMenu').children();
+        var value = 0;
+        $.each(childrenTag, function (index, tag) {
+            if ($(tag).hasClass('active')) {
+                value = index;
+            }
+        });
+        if (value == 0) {
+            renderNewPostList(pageNum, defaultPageSize);
+        }
+        if (value == 1) {
+            renderHotPostList(pageNum, defaultPageSize);
+        }
+        if (value == 2) {
+            renderBoutiquePostList(pageNum, defaultPageSize);
+        }
+    }
+
+    // 最新文章
+    function renderNewPostList(pageNum, pageSize) {
+        var url = baseUrl + '/api/post/pageList/new';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findPostList(pageNum, url, data);
+    }
+
+    // 热门文章
+    function renderHotPostList(pageNum, pageSize) {
+        var url = baseUrl + '/api/post/pageList/hot';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findPostList(pageNum, url, data);
+    }
+
+    // 精品文章
+    function renderBoutiquePostList(pageNum, pageSize) {
+        var url = baseUrl + '/api/post/pageList/boutique';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findPostList(pageNum, url, data);
+    }
+
+    // 请求列表
+    function findPostList(pageNum, url, data) {
+        $.ajax({
+            url: url,
+            type: 'post',
+            contentType: "application/json",
+            data: toJson(data),
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    var page = res.data;
+                    if (isNotBlank(page) && isNotBlank(page.data)) {
+                        var postList = page.data;
+                        var pageTotal = page.pageCount;
+                        renderPostList(postList);
+                        pagination($('#pagination'), pageNum, pageTotal, showPageCount, 'postList');
+                    } else {
+                        renderPostList(null);
+                    }
+                } else {
+                    var msg = res.responseMsg;
+                    dialogModal(msg, 2000);
+                }
+            }
+        })
+    }
+
+    // 渲染列表
+    function renderPostList(list) {
+        var html = '';
+        if (isNotBlank(list)) {
+            $.each(list, function (index, post) {
+                var id = post.id;
+                var createUser = post.user;
+                var createTime = post.createTime;
+                var title = post.title.trim();
+                var content = post.content;
+                var formatCreateTime = millisecondToDate(createTime);
+                if (isNotBlank(content)) {
+                    content = HtmlUtil.htmlDecode(content);
+                    content = content.replace(/[^\u4E00-\u9FA5]/g, '').trim();
+                    if (content.length > 30) {
+                        content = content.substring(0, 30) + '...';
+                    }
+                }
+                html += '<a href="' + baseUrl + '/post/toPost/' + id + '" target="_blank" class="list-group-item"><h4 class="list-group-item-heading">'
+                    + title + '</h4><p><span style="color: #01AAED">' + createUser.nickName
+                    + '</span>&nbsp;发表于&nbsp;<span style="color: gray">'
+                    + formatCreateTime + '</span></p><p class="list-group-item-text">'
+                    + content + '</p></a>';
+            });
+        } else {
+            html += '暂无数据';
+        }
+        $('#postList').html(html);
+    }
+
+</script>
+</html>

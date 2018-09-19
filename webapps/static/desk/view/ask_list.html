@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>post_list</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/summernote.css"/>
+    <link rel="stylesheet" href="css/square/green.css"/>
+    <link rel="stylesheet" href="css/common.css"/>
+</head>
+<body>
+<div class="container">
+    <ol class="breadcrumb">
+        <li><a href="javascript:void(0);" class="breadcrumbs-home">主页</a></li>
+        <li class="active">问答</li>
+    </ol>
+    <div>
+        <ul id="askMenu" class="nav nav-tabs">
+            <li role="presentation" class="active"><a href="javascript:void(0);" onclick="switchActive(this)">为我推荐</a>
+            </li>
+            <li role="presentation"><a href="javascript:void(0);" onclick="switchActive(this)">最新问答</a></li>
+            <li role="presentation"><a href="javascript:void(0);" onclick="switchActive(this)">热门问答</a></li>
+            <li role="presentation"><a href="javascript:void(0);" onclick="switchActive(this)">已解决问答</a></li>
+        </ul>
+    </div>
+
+    <div id="askList" class="list-group">
+        <!--<a href="#" class="list-group-item">-->
+        <!--<h4 class="list-group-item-heading">List group item heading</h4>-->
+        <!--<p><span style="color: #01AAED">admin</span>&nbsp;最近更新于&nbsp;<span style="color: gray">2018-09-07</span></p>-->
+        <!--<p class="list-group-item-text">...</p>-->
+        <!--</a>-->
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+</div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/common.js"></script>
+<script>
+    var showPageCount = defaultShowPageCount;
+    $(function () {
+        askList(1);
+    });
+
+    // 菜单切换事件
+    function switchActive(tag) {
+        $('#askMenu').children().removeClass('active');
+        $(tag).parent().addClass('active');
+        askList(1);
+    }
+
+    function askList(pageNum) {
+        var childrenTag = $('#askMenu').children();
+        var value = 0;
+        $.each(childrenTag, function (index, tag) {
+            if ($(tag).hasClass('active')) {
+                value = index;
+            }
+        });
+        if (value == 0) {
+            renderRecommendAskList(pageNum, defaultPageSize);
+        }
+        if (value == 1) {
+            renderNewAskList(pageNum, defaultPageSize);
+        }
+        if (value == 2) {
+            renderHotPostList(pageNum, defaultPageSize);
+        }
+        if (value == 3) {
+            renderResolvedPostList(pageNum, defaultPageSize);
+        }
+    }
+
+    // 为我推荐
+    function renderRecommendAskList(pageNum, pageSize) {
+        var url = baseUrl + '/api/ask/pageList/recommend';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findAskList(pageNum, url, data);
+    }
+
+    // 最新问答
+    function renderNewAskList(pageNum, pageSize) {
+        var url = baseUrl + '/api/ask/pageList/new';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findAskList(pageNum, url, data);
+    }
+
+    // 热门问答
+    function renderHotPostList(pageNum, pageSize) {
+        var url = baseUrl + '/api/ask/pageList/hot';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findAskList(pageNum, url, data);
+    }
+
+    // 已解决问答
+    function renderResolvedPostList(pageNum, pageSize) {
+        var url = baseUrl + '/api/ask/pageList/resolved';
+        var data = {
+            pageNum: pageNum,
+            pageSize: pageSize,
+            orderBy: 'createTime',
+            isAsc: false
+        };
+        findAskList(pageNum, url, data);
+    }
+
+    function findAskList(pageNum, url, data) {
+        var callback = function callback(page) {
+            if (isNotBlank(page) && isNotBlank(page.data)) {
+                var postList = page.data;
+                var pageTotal = page.pageCount;
+                renderAskList(postList);
+                pagination($('#pagination'), pageNum, pageTotal, showPageCount, 'askList');
+            } else {
+                renderAskList(null);
+            }
+        };
+        ajaxPost(url, data, callback);
+    }
+
+    function renderAskList(list) {
+        var html = '';
+        if (isNotBlank(list)) {
+            $.each(list, function (index, ask) {
+                var id = ask.id;
+                var createUser = ask.askUser;
+                var createTime = ask.createTime;
+                var title = ask.title.trim();
+                var content = ask.content;
+                var formatCreateTime = millisecondToDate(createTime);
+                if (isNotBlank(content)) {
+                    content = HtmlUtil.htmlDecode(content);
+                    content = content.replace(/[^\u4E00-\u9FA5]/g, '').trim();
+                    if (content.length > 30) {
+                        content = content.substring(0, 30) + '...';
+                    }
+                }
+                html += '<a href="' + baseUrl + '/ask/toAsk/' + id + '" target="_blank" class="list-group-item"><h4 class="list-group-item-heading">'
+                    + title + '</h4><p><span style="color: #01AAED">' + createUser.nickName
+                    + '</span>&nbsp;发表于&nbsp;<span style="color: gray">'
+                    + formatCreateTime + '</span></p><p class="list-group-item-text">'
+                    + content + '</p></a>';
+            });
+        } else {
+            html += '暂无数据';
+        }
+        $('#askList').html(html);
+    }
+
+</script>
+</html>

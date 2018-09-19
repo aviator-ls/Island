@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>addAsk</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/summernote.css"/>
+    <link rel="stylesheet" href="css/square/green.css"/>
+    <link rel="stylesheet" href="css/bootstrap-switch.min.css"/>
+    <link rel="stylesheet" href="css/common.css"/>
+</head>
+<body>
+<div class="container">
+    <div>
+        <ol class="breadcrumb">
+            <li><a href="javascript:void(0);" class="breadcrumbs-home">主页</a></li>
+            <li class="active">去提问</li>
+        </ol>
+        <form role="form">
+            <div class="form-group">
+                <input id="title" type="text" class="form-control" placeholder="标题:一句话说明问题"
+                       data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="标题为空">
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <div class="dropdown">
+                            <button id="boardType" class="btn btn-default dropdown-toggle" type="button"
+                                    data-toggle="dropdown"
+                                    aria-haspopup="true" aria-expanded="false">
+                                <span style="color:gray">选择版块</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul id="boardList" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <!--<li><a href="javascript:void(0);" onclick="boardSelect(this)">版块1</a></li>-->
+                                <!--<li><a href="javascript:void(0);" onclick="boardSelect(this)">版块2</a></li>-->
+                                <!--<li><a href="javascript:void(0);" onclick="boardSelect(this)">版块3</a></li>-->
+                            </ul>
+                        </div>
+                    </div>
+                    <input id="tagsText" type="text" class="form-control" placeholder="请选择标签" readonly="readonly"
+                           onclick="tagsSelect();">
+                </div><!-- /input-group -->
+            </div>
+            <!-- 文本编辑器 -->
+            <div id="content" class="form-group" data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="问题内容为空">
+                <div id="summernote"></div>
+            </div>
+            <!-- 文本编辑器结束 -->
+            <button type="submit" class="btn btn-default" style="float:right;" onclick="return submitForm()">提交</button>
+        </form>
+
+        <div class="modal fade bs-example-modal-lg" id="tagsModel" tabindex="-1" role="dialog" aria-labelledby="选择标签">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="gridSystemModalLabel">标签</h4>
+                    </div>
+                    <div id="tagSet" class="modal-body clear">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveTagSet()">保 存
+                        </button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div>
+        </div>
+
+    </div>
+</div><!-- container -->
+
+<div id="tagIds" style="display: none"></div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/common.js"></script>
+<script src="js/summernote.min.js"></script>
+<script src="js/icheck.min.js"></script>
+<script src="js/bootstrap-switch.min.js"></script>
+<script src="lang/summernote-zh-CN.js"></script>
+<script>
+    $(function () {
+        var sessionStorage = window.sessionStorage;
+        $('#summernote').summernote({
+//            placeholder: '',
+            height: 340,
+            lang: 'zh-CN',
+            callbacks: {
+                onImageUpload: function (files) {
+                    var formData = new FormData();
+                    formData.append('file', files[0]);
+                    $.ajax({
+                        url: baseUrl + '/api/upload/postContent',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (res) {
+                            var code = res.responseCode;
+                            if (code == '0000') {
+                                var url = res.data;
+                                $('#summernote').summernote('insertImage', baseUrl + url, url.substr(url.lastIndexOf('/') + 1));
+                            } else {
+                                var msg = res.responseMsg;
+                                dialogModal(msg, 2000);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        boardList();
+    });
+
+    function tagSet() {
+        var url = baseUrl + '/api/tag/list';
+        var successFunc = function (res) {
+            var tagSet = res.data;
+            var setHtml = "";
+            $.each(tagSet, function (index, tag) {
+                var tagId = tag.id;
+                setHtml += '<input type="checkbox" name="' + tag.name + '" id="' + tagId + '"';
+                if (isCheckedTag(tagId)) {
+                    setHtml += ' checked ';
+                }
+                setHtml += '">&nbsp&nbsp<label for="' + tagId + '">' + tag.name + '</label>';
+            });
+            $('#tagSet').html(setHtml);
+            $('#tagSet input').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'icheckbox_square-green'
+            });
+        };
+        ajaxGet(url, successFunc);
+    }
+
+    // 版块下拉列表
+    function boardList() {
+        $.ajax({
+            url: baseUrl + '/api/board/leafList',
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    var boardSet = res.data;
+                    var listHtml = "";
+                    $.each(boardSet, function (index, board) {
+                        listHtml += '<li><a href="javascript:void(0);" onclick="boardSelect(this)" value="' + board.id + '">' + board.name + '</a></li>';
+                    });
+                    $('#boardList').html(listHtml);
+                } else {
+                    var msg = res.responseMsg;
+                    dialogModal(msg, 2000);
+                }
+            }
+        });
+    }
+
+    // 保存选择的标签
+    function saveTagSet() {
+        var checkedTag = $('#tagSet input:checked');
+        var names = '';
+        var ids = '';
+        if (isNotBlank(checkedTag)) {
+            ids += '<input type="hidden" value="';
+            $.each(checkedTag, function (index, tag) {
+                names += tag.name + ',';
+                ids += tag.id
+            });
+            ids += '">';
+        }
+        names = names.substr(0, names.lastIndexOf(','));
+        $('#tagsText').val(names);
+        $('#tagIds').html(ids);
+    }
+
+    function isCheckedTag(tagId) {
+        var tagCheckIds = $('#tagIds input');
+        var result = false;
+        $.each(tagCheckIds, function (index, idTag) {
+            var id = $(idTag).val();
+            if (id == tagId) {
+                result = true;
+            }
+        });
+        return result;
+    }
+
+    // 标签选择列表弹出
+    function tagsSelect() {
+        tagSet();
+        $('#tagsModel').modal('show');
+    }
+
+    // 版块下拉选择
+    function boardSelect(sourceTag) {
+        var obj = $(sourceTag);
+        var boardType = $('#boardType');
+        boardType.val(obj.attr("value"));
+        boardType.html(obj.text() + ' <span class="caret"></span>');
+    }
+
+    function submitForm() {
+        var titleTag = $('#title');
+        var boardTypeTag = $('#boardType');
+        var tagsTextTag = $('#tagsText');
+        var contentTag = $('#summernote');
+        var title = titleTag.val();
+        var boardType = boardTypeTag.val();
+        var tagsText = tagsTextTag.val();
+        var contentText = contentTag.summernote('code');
+        if (isBlank(title)) {
+            tooltipFade(titleTag);
+            fade(titleTag);
+        } else if (isBlank(tagsText)) {
+            tooltipFade(tagsTextTag);
+            fade(tagsTextTag);
+        } else if (contentTag.summernote('isEmpty')) {
+            contentTag.summernote('focus');
+            tooltipFade($('#content'));
+            fade($('#content'));
+        } else {
+            var tagsStr = $('#tagIds input:first').val();
+            $.ajax({
+                url: baseUrl + '/api/ask',
+                type: 'post',
+                contentType: "application/json",
+                data: toJson({
+                    title: title,
+                    content: HtmlUtil.htmlEncode(contentText),
+                    type: 1,
+                    boardId: boardType,
+                    tagIdSet: tagsStr.split(',')
+                }),
+                success: function (res) {
+                    var code = res.responseCode;
+                    if (code == '0000') {
+                        dialogModal('问题已提交！', 1000, toAskList);
+                    } else {
+                        var msg = res.responseMsg;
+                        dialogModal(msg, 2000);
+                    }
+                }
+            });
+        }
+        return false;
+    }
+
+    var toAskList = function toAskList() {
+        window.open(baseUrl + '/toAskList', '_self');
+    }
+
+</script>
+</html>

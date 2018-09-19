@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="1800">
+    <properties>
+        <property name="LOG_HOME">/WEB-INF/logs</property>
+        <property name="FILE_NAME">finance-pay</property>
+    </properties>
+
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
+        </Console>
+
+        <RollingFile name="running-log" fileName="${LOG_HOME}/${FILE_NAME}.log"
+                     filePattern="${LOG_HOME}/$${date:yyyy-MM}/${FILE_NAME}-%d{yyyy-MM-dd}-%i.log.gz"
+                     immediateFlush="true">
+            <PatternLayout
+                    pattern="%date{yyyy-MM-dd HH:mm:ss.SSS} %level [%thread][%file:%line] - %msg%n" />
+            <Policies>
+                <TimeBasedTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10 MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="20" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!-- 打印hibernate的info日志 -->
+        <Logger name="org.hibernate" level="info" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+
+        <!-- 打印sql语句 -->
+        <Logger name="org.hibernate.SQL" level="debug" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+
+        <!-- 打印sql语句的参数绑定 -->
+        <Logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="trace" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+
+        <!-- 查询出来的结果集提取，如果嫌这个日志太多可以关掉 -->
+        <Logger name="org.hibernate.type.descriptor.sql.BasicExtractor" level="trace" additivity="false">
+            <AppenderRef ref="Console" />
+        </Logger>
+        <Root level="debug">
+            <!-- 这里是输入到文件，很重要-->
+            <AppenderRef ref="running-log" />
+            <!-- 这里是输入到控制台-->
+            <AppenderRef ref="Console" />
+        </Root>
+    </Loggers>
+</Configuration>

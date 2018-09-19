@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+    <title>addPost</title>
+    <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/summernote.css"/>
+    <link rel="stylesheet" href="css/square/green.css"/>
+    <link rel="stylesheet" href="css/bootstrap-switch.min.css"/>
+    <link rel="stylesheet" href="css/common.css"/>
+</head>
+<body>
+<div class="container">
+    <div>
+        <ol class="breadcrumb">
+            <li><a href="javascript:void(0);" class="breadcrumbs-home">主页</a></li>
+            <li class="active">写博客</li>
+        </ol>
+        <form role="form">
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button id="sourceType" type="button" class="btn btn-default dropdown-toggle"
+                                data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false" value="1">原创 <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="javascript:void(0);" onclick="sourceSelect(this)" value="1">原创</a></li>
+                            <li><a href="javascript:void(0);" onclick="sourceSelect(this)" value="2">转载</a></li>
+                            <li><a href="javascript:void(0);" onclick="sourceSelect(this)" value="3">翻译</a></li>
+                            <!--<li role="separator" class="divider"></li>-->
+                            <!--<li><a href="#">Separated link</a></li>-->
+                        </ul>
+                    </div><!-- /btn-group -->
+                    <input id="title" type="text" class="form-control" placeholder="标题:二十而冠，以梦为马不负韶华"
+                           data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="标题为空">
+                </div><!-- /input-group -->
+            </div>
+            <div id="sourceGroup" class="form-group" style="display: none">
+                <input id="source" type="text" class="form-control" placeholder="文章来源..." data-toggle="tooltip"
+                       data-placement="bottom"
+                       title="非原创文章因标明来源">
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <div class="input-group-btn">
+                        <button id="specialType" type="button" class="btn btn-default dropdown-toggle" value=""
+                                data-toggle="dropdown"
+                                aria-haspopup="true" aria-expanded="false"><span style="color:gray">选择文章专辑</span>
+                            <span class="caret"></span></button>
+                        <ul id="specialList" class="dropdown-menu"
+                            style="max-height:150px;overflow:auto;overflow-x: hidden">
+                        </ul>
+                    </div><!-- /btn-group -->
+                    <input id="tagsText" type="text" class="form-control" placeholder="请选择标签(必选)..." readonly="readonly"
+                           onclick="tagsSelect();" data-toggle="tooltip"
+                           data-placement="bottom"
+                           title="未选择标签">
+                </div><!-- /input-group -->
+            </div>
+            <div class="form-group">
+                <div class="dropdown" style="display: inline-block;margin-right: 10px">
+                    <button id="boardType" class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-haspopup="true" aria-expanded="false">
+                        <span style="color:gray">选择版块</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul id="boardList" class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                        <!--<li><a href="javascript:void(0);" onclick="boardSelect(this)">版块1</a></li>-->
+                        <!--<li><a href="javascript:void(0);" onclick="boardSelect(this)">版块2</a></li>-->
+                        <!--<li><a href="javascript:void(0);" onclick="boardSelect(this)">版块3</a></li>-->
+                    </ul>
+                </div>
+                <span>是否公开&nbsp:&nbsp</span><input name="isOpen" type="checkbox" checked/>
+                <span id="openTips" style="color: gray;">设置为公开</span>
+            </div>
+            <!-- 文本编辑器 -->
+            <div id="postContent" class="form-group" data-toggle="tooltip"
+                 data-placement="bottom"
+                 title="内容为空">
+                <div id="summernote"></div>
+            </div>
+            <!-- 文本编辑器结束 -->
+            <button type="submit" class="btn btn-default" style="float:right;" onclick="return submitForm()">提交</button>
+        </form>
+
+        <div class="modal fade bs-example-modal-lg" id="tagsModel" tabindex="-1" role="dialog" aria-labelledby="选择标签">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="gridSystemModalLabel">标签</h4>
+                    </div>
+                    <div id="tagSet" class="modal-body clear">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveTagSet()">保 存
+                        </button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div>
+        </div>
+
+        <div class="modal fade bs-example-modal-lg" id="specialModel" tabindex="-1" role="dialog"
+             aria-labelledby="新增专辑">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">新增专辑</h4>
+                    </div>
+                    <div class="modal-body clear">
+                        <div class="form-group">
+                            <div class="input-group">
+                                专辑名称&nbsp<span style="color:red">*</span>&nbsp:
+                                <input type="text" id="specialName" class="form-control" placeholder="专辑名称(必填)..."
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="专辑名称为空">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                专辑描述&nbsp:
+                                <input type="text" id="specialDesc" class="form-control" placeholder="专辑描述">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+                        <button type="button" class="btn btn-primary" onclick="saveSpecial()">保 存</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div>
+        </div>
+
+    </div>
+</div><!-- container -->
+
+<div id="tagIds" style="display: none"></div>
+</body>
+<script src="js/jquery-3.3.1.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/modal.js"></script>
+<script src="js/common.js"></script>
+<script src="js/summernote.min.js"></script>
+<script src="js/icheck.min.js"></script>
+<script src="js/bootstrap-switch.min.js"></script>
+<script src="lang/summernote-zh-CN.js"></script>
+<script>
+    $(function () {
+        var sessionStorage = window.sessionStorage;
+        $('#summernote').summernote({
+//            placeholder: '',
+            height: 340,
+            lang: 'zh-CN',
+            callbacks: {
+                onImageUpload: function (files) {
+                    var formData = new FormData();
+                    formData.append('file', files[0]);
+                    $.ajax({
+                        url: baseUrl + '/api/upload/postContent',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (res) {
+                            var code = res.responseCode;
+                            if (code == '0000') {
+                                var url = res.data;
+                                $('#summernote').summernote('insertImage', baseUrl + url, url.substr(url.lastIndexOf('/') + 1));
+                            } else {
+                                var msg = res.responseMsg;
+                                dialogModal(msg, 2000);
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        $('input[name="isOpen"]').bootstrapSwitch({
+            onText: "是",
+            offText: "否",
+            onSwitchChange: function (event, state) {
+                if (state == true) {
+                    $(this).val("1");
+                    $('#openTips').show();
+                } else {
+                    $(this).val("2");
+                    $('#openTips').hide();
+                }
+            }
+        });
+        $('input[name="isOpen"]').bootstrapSwitch('state', true);
+        boardList();
+        specialList();
+    });
+
+    function specialList() {
+        var url = baseUrl + '/api/postSpecial/list/user';
+        var successFunc = function (res) {
+            var specialList = res.data;
+            var listHtml = "";
+            $.each(specialList, function (index, special) {
+                listHtml += '<li><a href="javascript:void(0);" onclick="specialSelect(this)" value="' + special.id + '">' + special.name + '</a></li>';
+            });
+            listHtml += '<li role="separator" class="divider"></li><li><a href="javascript:void(0);" onclick="toAddSpecial()">添加专辑</a></li>';
+            $('#specialList').html(listHtml);
+        };
+        ajaxGet(url, successFunc);
+    }
+
+    function tagSet() {
+        var url = baseUrl + '/api/tag/list';
+        var successFunc = function (res) {
+            var tagSet = res.data;
+            var setHtml = "";
+            $.each(tagSet, function (index, tag) {
+                var tagId = tag.id;
+                setHtml += '<input type="checkbox" name="' + tag.name + '" id="' + tagId + '"';
+                if (isCheckedTag(tagId)) {
+                    setHtml += ' checked ';
+                }
+                setHtml += '">&nbsp&nbsp<label for="' + tagId + '">' + tag.name + '</label>';
+            });
+            $('#tagSet').html(setHtml);
+            $('#tagSet input').iCheck({
+                checkboxClass: 'icheckbox_square-green',
+                radioClass: 'icheckbox_square-green'
+            });
+        };
+        ajaxGet(url, successFunc);
+    }
+
+    // 版块下拉列表
+    function boardList() {
+        $.ajax({
+            url: baseUrl + '/api/board/leafList',
+            success: function (res) {
+                var code = res.responseCode;
+                if (code == '0000') {
+                    var boardSet = res.data;
+                    var listHtml = "";
+                    $.each(boardSet, function (index, board) {
+                        listHtml += '<li><a href="javascript:void(0);" onclick="boardSelect(this)" value="' + board.id + '">' + board.name + '</a></li>';
+                    });
+                    $('#boardList').html(listHtml);
+                } else {
+                    var msg = res.responseMsg;
+                    dialogModal(msg, 2000);
+                }
+            }
+        });
+    }
+
+    // 保存选择的标签
+    function saveTagSet() {
+        var checkedTag = $('#tagSet input:checked');
+        var names = '';
+        var ids = '';
+        if (isNotBlank(checkedTag)) {
+            ids += '<input type="hidden" value="';
+            $.each(checkedTag, function (index, tag) {
+                names += tag.name + ',';
+                ids += tag.id
+            });
+            ids += '">';
+        }
+        names = names.substr(0, names.lastIndexOf(','));
+        $('#tagsText').val(names);
+        $('#tagIds').html(ids);
+    }
+
+    // 保存新增的专辑
+    function saveSpecial() {
+        var specialNameTag = $('#specialName');
+        var specialDescTag = $('#specialDesc');
+        var specialName = specialNameTag.val();
+        var specialDesc = specialDescTag.val();
+        if (isBlank(specialName)) {
+            tooltipFade(specialNameTag);
+            fade(specialNameTag);
+        } else {
+            var url = baseUrl + '/api/postSpecial';
+            var data = {
+                name: specialName,
+                desc: specialDesc
+            };
+            ajaxPost(url, data);
+            $('#specialModel').on('hidden.bs.modal', function () {
+                specialList();
+            });
+            $('#specialModel').modal('hide');
+        }
+    }
+
+    function isCheckedTag(tagId) {
+        var tagCheckIds = $('#tagIds input');
+        var result = false;
+        $.each(tagCheckIds, function (index, idTag) {
+            var id = $(idTag).val();
+            if (id == tagId) {
+                result = true;
+            }
+        });
+        return result;
+    }
+
+    // 来源下拉选择
+    function sourceSelect(sourceTag) {
+        var obj = $(sourceTag);
+        var sourceType = $('#sourceType');
+        sourceType.val(obj.attr("value"));
+        sourceType.html(obj.text() + ' <span class="caret"></span>');
+        if (sourceType.val() != '1') {
+            $('#sourceGroup').show();
+        } else {
+            $('#sourceGroup').hide();
+        }
+    }
+
+    // 专辑下拉选择
+    function specialSelect(sourceTag) {
+        var obj = $(sourceTag);
+        var specialType = $('#specialType');
+        specialType.val(obj.attr("value"));
+        specialType.html(obj.text() + ' <span class="caret"></span>');
+    }
+
+    // 标签选择列表弹出
+    function tagsSelect() {
+        tagSet();
+        $('#tagsModel').modal('show');
+    }
+
+    // 版块下拉选择
+    function boardSelect(sourceTag) {
+        var obj = $(sourceTag);
+        var boardType = $('#boardType');
+        boardType.val(obj.attr("value"));
+        boardType.html(obj.text() + ' <span class="caret"></span>');
+    }
+
+    // 新增专辑弹出
+    function toAddSpecial() {
+        tagSet();
+        $('#specialModel').modal('show');
+    }
+
+    function submitForm() {
+        var titleTag = $('#title');
+        var sourceTypeTag = $('#sourceType');
+        var specialTypeTag = $('#specialType');
+        var boardTypeTag = $('#boardType');
+        var tagsTextTag = $('#tagsText');
+        var sourceTag = $('#source');
+        var contentTag = $('#summernote');
+        var title = titleTag.val();
+        var sourceType = sourceTypeTag.val();
+        var specialType = specialTypeTag.val();
+        var boardType = boardTypeTag.val();
+        var tagsText = tagsTextTag.val();
+        var source = sourceTag.val();
+        var contentText = contentTag.summernote('code');
+        if (isBlank(title)) {
+            tooltipFade(titleTag);
+            fade(titleTag);
+        } else if (isBlank(tagsText)) {
+            tooltipFade(tagsTextTag);
+            fade(tagsTextTag);
+        } else if (contentTag.summernote('isEmpty')) {
+            contentTag.summernote('focus');
+            tooltipFade($('#postContent'));
+            fade($('#postContent'));
+        } else if (sourceType != '1' && isBlank(source)) {
+            tooltipFade(sourceTag);
+            fade(sourceTag);
+        } else {
+            var tagsStr = $('#tagIds input:first').val();
+            $.ajax({
+                url: baseUrl + '/api/post',
+                type: 'post',
+                contentType: "application/json",
+                data: toJson({
+                    title: title,
+                    content: HtmlUtil.htmlEncode(contentText),
+                    specialId: specialType,
+                    boardId: boardType,
+                    sourceType: sourceType,
+                    source: source,
+                    tagIdSet: tagsStr.split(',')
+                }),
+                success: function (res) {
+                    var code = res.responseCode;
+                    if (code == '0000') {
+                        dialogModal('文章发布成功！', 1000, toPostList);
+                    } else {
+                        var msg = res.responseMsg;
+                        dialogModal(msg, 2000);
+                    }
+                }
+            });
+        }
+        return false;
+    }
+
+    var toPostList = function toPostList() {
+        window.open(baseUrl + '/toPostList', '_self');
+    }
+
+</script>
+</html>
