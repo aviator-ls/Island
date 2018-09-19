@@ -15,7 +15,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import javax.validation.ConstraintViolationException;
 
 /**
- * Created by 18057046 on 2018/8/8.
+ * Created by aviator_ls on 2018/8/8.
  */
 @ControllerAdvice(basePackages = {"com.aviator.island.controller"})
 public class GlobalExceptionHandler {

@@ -3,7 +3,7 @@ package com.aviator.island.utils;
 import org.springframework.cache.Cache;
 
 /**
- * Created by 18057046 on 2018/7/24.
+ * Created by aviator_ls on 2018/7/24.
  */
 public class CacheUtil {
     public interface CACHE_NAME {

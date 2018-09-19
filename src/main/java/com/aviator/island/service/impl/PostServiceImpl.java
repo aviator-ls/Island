@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * Created by 18057046 on 2018/7/18.
+ * Created by aviator_ls on 2018/7/18.
  */
 @Service
 public class PostServiceImpl extends AbstractBaseService<Post> implements PostService<Post> {

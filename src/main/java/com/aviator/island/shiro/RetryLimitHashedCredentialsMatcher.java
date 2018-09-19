@@ -12,7 +12,7 @@ import org.springframework.cache.CacheManager;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Created by 18057046 on 2018/7/31.
+ * Created by aviator_ls on 2018/7/31.
  */
 public class RetryLimitHashedCredentialsMatcher extends HashedCredentialsMatcher {
 

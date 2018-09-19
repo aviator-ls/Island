@@ -11,7 +11,7 @@ import javax.persistence.*;
 import java.util.Set;
 
 /**
- * Created by 18057046 on 2018/7/27.
+ * Created by aviator_ls on 2018/7/27.
  */
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

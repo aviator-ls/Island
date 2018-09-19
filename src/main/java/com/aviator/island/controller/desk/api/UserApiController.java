@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * 用户管理
- * Created by 18057046 on 2018/7/23.
+ * Created by aviator_ls on 2018/7/23.
  */
 @RestController
 @RequestMapping("/api/user")

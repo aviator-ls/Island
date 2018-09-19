@@ -8,7 +8,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
- * Created by 18057046 on 2018/7/20.
+ * Created by aviator_ls on 2018/7/20.
  */
 public class IndexControllerTest extends BaseJunit4Test {
 

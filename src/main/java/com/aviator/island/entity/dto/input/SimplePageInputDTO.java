@@ -9,7 +9,7 @@ import org.springframework.beans.BeanUtils;
 import javax.validation.constraints.Min;
 
 /**
- * Created by 18057046 on 2018/9/7.
+ * Created by aviator_ls on 2018/9/7.
  */
 @Data
 public class SimplePageInputDTO extends BaseInputDTO<SimplePageInputDTO, SearchPage> {

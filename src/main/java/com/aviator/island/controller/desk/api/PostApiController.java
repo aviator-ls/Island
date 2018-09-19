@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * 帖子（文章）
- * Created by 18057046 on 2018/8/3.
+ * Created by aviator_ls on 2018/8/3.
  */
 @RestController
 @RequestMapping("/api/post")

@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Created by 18057046 on 2018/7/18.
+ * Created by aviator_ls on 2018/7/18.
  */
 @Service
 public class UserServiceImpl extends AbstractBaseService<User> implements UserService<User> {

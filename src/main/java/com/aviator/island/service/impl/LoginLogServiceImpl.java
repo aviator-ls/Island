@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by 18057046 on 2018/7/18.
+ * Created by aviator_ls on 2018/7/18.
  */
 @Service
 public class LoginLogServiceImpl extends AbstractBaseService<LoginLog> implements LoginLogService<LoginLog> {

@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * 文章专辑
- * Created by 18057046 on 2018/9/12.
+ * Created by aviator_ls on 2018/9/12.
  */
 @RestController
 @RequestMapping("/api/postSpecial")

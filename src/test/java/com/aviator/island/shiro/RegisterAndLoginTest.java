@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by 18057046 on 2018/7/27.
+ * Created by aviator_ls on 2018/7/27.
  */
 public class RegisterAndLoginTest extends BaseJunit4Test{
 

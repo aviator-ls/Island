@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by 18057046 on 2018/7/16.
+ * Created by aviator_ls on 2018/7/16.
  */
 @Slf4j
 public abstract class AbstractBaseDao<T> implements BaseDao<T> {

@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * 版块管理
- * Created by 18057046 on 2018/8/14.
+ * Created by aviator_ls on 2018/8/14.
  */
 @RestController
 @RequestMapping("/api/board")

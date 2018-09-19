@@ -6,7 +6,7 @@ import com.aviator.island.entity.po.Answer;
 import org.springframework.stereotype.Repository;
 
 /**
- * Created by 18057046 on 2018/8/24.
+ * Created by aviator_ls on 2018/8/24.
  */
 @Repository
 public class AnswerDaoImpl extends AbstractBaseDao<Answer> implements AnswerDao<Answer> {

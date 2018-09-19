@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
- * Created by 18057046 on 2018/9/12.
+ * Created by aviator_ls on 2018/9/12.
  */
 @Service
 public class PostSpecialServiceImpl extends AbstractBaseService<PostSpecial> implements PostSpecialService<PostSpecial> {

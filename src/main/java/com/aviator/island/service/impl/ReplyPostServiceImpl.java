@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * Created by 18057046 on 2018/8/16.
+ * Created by aviator_ls on 2018/8/16.
  */
 @Service
 public class ReplyPostServiceImpl extends AbstractBaseService<ReplyPost> implements ReplyPostService<ReplyPost>{

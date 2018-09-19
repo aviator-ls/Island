@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by 18057046 on 2018/8/14.
+ * Created by aviator_ls on 2018/8/14.
  */
 public class BoardOutputDTOTest extends BaseJunit4Test{
 

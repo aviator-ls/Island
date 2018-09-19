@@ -5,7 +5,7 @@ import com.aviator.island.entity.po.SearchPage;
 import com.aviator.island.utils.Page;
 
 /**
- * Created by 18057046 on 2018/7/18.
+ * Created by aviator_ls on 2018/7/18.
  */
 public interface PostService<T> extends BaseService<T> {
     /**

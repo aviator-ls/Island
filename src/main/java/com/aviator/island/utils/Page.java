@@ -5,7 +5,7 @@ import com.aviator.island.entity.BaseEntity;
 import java.util.List;
 
 /**
- * Created by 18057046 on 2018/7/16.
+ * Created by aviator_ls on 2018/7/16.
  */
 public class Page<T> extends BaseEntity {
     public static final int DEFAULT_PAGE_SIZE = 10;

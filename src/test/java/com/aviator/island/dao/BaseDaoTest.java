@@ -14,7 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * Created by 18057046 on 2018/8/19.
+ * Created by aviator_ls on 2018/8/19.
  */
 public class BaseDaoTest extends BaseJunit4Test {
 

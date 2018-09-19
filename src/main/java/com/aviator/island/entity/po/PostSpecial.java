@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  * 文章专辑
- * Created by 18057046 on 2018/9/12.
+ * Created by aviator_ls on 2018/9/12.
  */
 @Entity
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)

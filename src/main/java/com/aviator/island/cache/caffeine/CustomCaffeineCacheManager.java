@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by 18057046 on 2018/7/24.
+ * Created by aviator_ls on 2018/7/24.
  */
 public class CustomCaffeineCacheManager implements InitializingBean,CacheManager  {
     private Caffeine<Object, Object> cacheBuilder;

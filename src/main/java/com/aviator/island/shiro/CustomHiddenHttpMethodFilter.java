@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Created by 18057046 on 2018/8/14.
+ * Created by aviator_ls on 2018/8/14.
  */
 public class CustomHiddenHttpMethodFilter extends OncePerRequestFilter {
     private static final List<String> ALLOWED_METHODS;

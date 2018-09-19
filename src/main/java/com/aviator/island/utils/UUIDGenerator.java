@@ -3,7 +3,7 @@ package com.aviator.island.utils;
 import java.util.UUID;
 
 /**
- * Created by 18057046 on 2018/8/2.
+ * Created by aviator_ls on 2018/8/2.
  */
 public class UUIDGenerator {
 

@@ -1,7 +1,7 @@
 package com.aviator.island.constants;
 
 /**
- * Created by 18057046 on 2018/7/20.
+ * Created by aviator_ls on 2018/7/20.
  */
 public enum ResponseCode {
 

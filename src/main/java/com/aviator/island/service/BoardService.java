@@ -7,7 +7,7 @@ import com.aviator.island.utils.Page;
 import java.util.List;
 
 /**
- * Created by 18057046 on 2018/7/18.
+ * Created by aviator_ls on 2018/7/18.
  */
 public interface BoardService<T> extends BaseService<T> {
 

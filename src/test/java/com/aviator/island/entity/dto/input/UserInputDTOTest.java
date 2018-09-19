@@ -9,7 +9,7 @@ import org.springframework.util.Assert;
 
 
 /**
- * Created by 18057046 on 2018/8/13.
+ * Created by aviator_ls on 2018/8/13.
  */
 public class UserInputDTOTest extends BaseJunit4Test{
 

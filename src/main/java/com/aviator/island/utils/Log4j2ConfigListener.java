@@ -7,7 +7,7 @@ import javax.servlet.ServletContextListener;
 import java.util.Enumeration;
 
 /**
- * Created by 18057046 on 2018/7/24.
+ * Created by aviator_ls on 2018/7/24.
  */
 public class Log4j2ConfigListener implements ServletContextListener {
     private static final String KEY = "log4j.configurationFile";

@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
- * Created by 18057046 on 2018/7/17.
+ * Created by aviator_ls on 2018/7/17.
  */
 @RunWith(SpringRunner.class)  //使用junit4进行测试
 @ContextConfiguration({"classpath:conf/spring/spring.xml", "classpath:conf/spring/spring-mvc.xml"})

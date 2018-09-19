@@ -23,7 +23,7 @@ import java.io.Serializable;
 
 /**
  * 问答
- * Created by 18057046 on 2018/9/13.
+ * Created by aviator_ls on 2018/9/13.
  */
 @RestController
 @RequestMapping("/api/ask")

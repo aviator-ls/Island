@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.Order;
 
 /**
- * Created by 18057046 on 2018/8/7.
+ * Created by aviator_ls on 2018/8/7.
  */
 public class OrderUtil {
     public static Order order(String orderBy, boolean isAsc) {

@@ -7,7 +7,7 @@ import org.apache.shiro.session.mgt.eis.SessionIdGenerator;
 import java.io.Serializable;
 
 /**
- * Created by 18057046 on 2018/8/2.
+ * Created by aviator_ls on 2018/8/2.
  */
 public class CustomJavaUuidSessionIdGenerator implements SessionIdGenerator {
     @Override

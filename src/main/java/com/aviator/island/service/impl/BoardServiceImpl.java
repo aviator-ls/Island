@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by 18057046 on 2018/7/18.
+ * Created by aviator_ls on 2018/7/18.
  */
 @Service
 public class BoardServiceImpl extends AbstractBaseService<Board> implements BoardService<Board> {

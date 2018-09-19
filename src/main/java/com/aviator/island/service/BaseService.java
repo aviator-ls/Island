@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Created by 18057046 on 2018/8/3.
+ * Created by aviator_ls on 2018/8/3.
  */
 public interface BaseService<T> {
 

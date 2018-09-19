@@ -8,7 +8,7 @@ import org.apache.shiro.crypto.hash.HashRequest;
 import org.apache.shiro.util.ByteSource;
 
 /**
- * Created by 18057046 on 2018/7/27.
+ * Created by aviator_ls on 2018/7/27.
  */
 public class ShiroEncryptUserUtil {
 

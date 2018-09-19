@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.Date;
 
 /**
- * Created by 18057046 on 2018/7/20.
+ * Created by aviator_ls on 2018/7/20.
  */
 public class LoginLogServiceTest extends BaseJunit4Test {
 

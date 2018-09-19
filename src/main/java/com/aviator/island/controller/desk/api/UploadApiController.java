@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Created by 18057046 on 2018/9/5.
+ * Created by aviator_ls on 2018/9/5.
  */
 @RestController
 @RequestMapping("/api/upload")

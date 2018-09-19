@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Serializable;
 
 /**
- * Created by 18057046 on 2018/8/13.
+ * Created by aviator_ls on 2018/8/13.
  */
 public class PostServiceTest extends BaseJunit4Test {
     @Autowired

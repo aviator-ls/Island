@@ -1,7 +1,7 @@
 package com.aviator.island.utils;
 
 /**
- * Created by 18057046 on 2018/8/7.
+ * Created by aviator_ls on 2018/8/7.
  */
 public enum SearchConditional {
     EQ("eq"),// 等于
