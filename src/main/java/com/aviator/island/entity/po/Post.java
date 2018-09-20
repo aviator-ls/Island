@@ -50,6 +50,9 @@ public class Post extends BaseEntity {
     @Column(name = "boutique", columnDefinition = "tinyint")
     private int boutique;//是否精品 是:1,否:0
 
+    @Column(name = "is_open", columnDefinition = "tinyint")
+    private int isOpen;// 是否公开 1:公开(默认) 2:不公开
+
     @Column(name = "create_time")
     private Date createTime = new Date();// 发布时间
 

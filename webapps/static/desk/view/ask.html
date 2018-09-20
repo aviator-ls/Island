@@ -83,7 +83,7 @@
                     $('.blog-post').html(contentHtml);
                 } else {
                     var msg = res.responseMsg;
-                    dialogModal(msg, 2000);
+                    dialogModalError(msg, 2000);
                 }
             }
         })
@@ -146,7 +146,7 @@
     }
 
     var successCallBack = function () {
-        dialogModal('提问回答成功！', 1000, reloadCallback);
+        dialogModalSuccess('提问回答成功！', 1000, reloadCallback);
     };
 
     var reloadCallback = function () {

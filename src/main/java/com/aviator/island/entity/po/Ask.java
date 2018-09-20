@@ -59,4 +59,7 @@ public class Ask extends BaseEntity {
     @ManyToMany(targetEntity = Tag.class)
     @JoinTable(name = "t_ask_tag", joinColumns = @JoinColumn(name = "ask_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tagSet;
+
+    @ManyToMany(targetEntity = User.class, mappedBy = "collectAskSet")
+    private Set<User> collectorSet;// 收藏文章的用户
 }

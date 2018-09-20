@@ -70,7 +70,8 @@ CREATE TABLE `t_board` (
   `topic_num` int(11) NOT NULL DEFAULT '0' COMMENT '版块帖子总数',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='论坛版块表';
 
 /*Table structure for table `t_board_user` */
@@ -108,7 +109,7 @@ CREATE TABLE `t_login_log` (
   `ip` varchar(32) NOT NULL COMMENT '用户登录ip',
   `login_date` datetime NOT NULL COMMENT '登录时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=57 DEFAULT CHARSET=utf8 COMMENT='登录日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=72 DEFAULT CHARSET=utf8 COMMENT='登录日志表';
 
 /*Table structure for table `t_page_pic` */
 
@@ -141,6 +142,7 @@ CREATE TABLE `t_post` (
   `special_id` varchar(64) DEFAULT NULL COMMENT '专辑id',
   `create_time` datetime NOT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL COMMENT '更新时间',
+  `is_open` tinyint(4) NOT NULL DEFAULT '1' COMMENT '1:公开 2:不公开',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='主题帖';
 
@@ -279,7 +281,8 @@ CREATE TABLE `t_tag` (
   `update_time` datetime NOT NULL,
   `create_id` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '创建者id',
   `update_id` varchar(64) COLLATE utf8_bin NOT NULL COMMENT '更新者id',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tag_name` (`tag_name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='标签表';
 
 /*Table structure for table `t_topic` */
@@ -301,6 +304,17 @@ CREATE TABLE `t_topic` (
   UNIQUE KEY `user_id` (`user_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='话题表';
 
+/*Table structure for table `t_user_ask_collect` */
+
+DROP TABLE IF EXISTS `t_user_ask_collect`;
+
+CREATE TABLE `t_user_ask_collect` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(64) COLLATE utf8_bin NOT NULL,
+  `ask_id` varchar(64) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户问答收藏关联表';
+
 /*Table structure for table `t_user_post_collect` */
 
 DROP TABLE IF EXISTS `t_user_post_collect`;
@@ -311,6 +325,17 @@ CREATE TABLE `t_user_post_collect` (
   `post_id` varchar(64) COLLATE utf8_bin NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='用户收藏文章表';
+
+/*Table structure for table `t_user_user_follow` */
+
+DROP TABLE IF EXISTS `t_user_user_follow`;
+
+CREATE TABLE `t_user_user_follow` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(32) COLLATE utf8_bin NOT NULL,
+  `follower_id` varchar(32) COLLATE utf8_bin NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='关注用户表';
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;

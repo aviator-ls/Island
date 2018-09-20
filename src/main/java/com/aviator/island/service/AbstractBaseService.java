@@ -41,6 +41,11 @@ public abstract class AbstractBaseService<T> implements BaseService<T>, Initiali
     }
 
     @Override
+    public void initialize(Object entity) {
+        baseDao.initialize(entity);
+    }
+
+    @Override
     public Serializable save(T entity) {
         return baseDao.save(entity);
     }
@@ -138,10 +143,6 @@ public abstract class AbstractBaseService<T> implements BaseService<T>, Initiali
         return new Page(pageNum, pageSize, result, dataCount, order.getPropertyName(), order.isAscending());
     }
 
-    protected List<T> findListByCondition(DetachedCriteria criteria) {
-        return this.baseDao.findByCriteria(criteria);
-    }
-
     @Override
     public Page<T> findPageListByKeyword(SearchPage searchPage, Map<String, Object> keywordParams) {
         if (!CollectionUtils.isEmpty(keywordParams)) {
@@ -150,6 +151,10 @@ public abstract class AbstractBaseService<T> implements BaseService<T>, Initiali
             return this.findPageListByCondition(searchPage, builder, null);
         }
         return this.findPageListByCondition(searchPage);
+    }
+
+    protected List<T> findListByCondition(DetachedCriteria criteria) {
+        return this.baseDao.findByCriteria(criteria);
     }
 
     protected abstract BaseDao<T> getBaseDao();

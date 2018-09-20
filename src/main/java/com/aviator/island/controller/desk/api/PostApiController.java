@@ -13,8 +13,8 @@ import com.aviator.island.entity.sys.User;
 import com.aviator.island.service.PostService;
 import com.aviator.island.service.UserService;
 import com.aviator.island.utils.Page;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -40,17 +40,15 @@ public class PostApiController extends AbstractBaseController {
     public ResponseContent addPost(@Valid @RequestBody PostInputDTO postInputDTO, BindingResult validResult) {
         Post post = postInputDTO.converterTo();
         // 得到当前登录用户,作为创建用户
-        String userName = this.getPrincipal();
-        if (StringUtils.isBlank(userName)) {
+        User user = this.getSessionUser();
+        if (user == null) {
             return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
         }
-        User user = userService.getUserByUserName(this.getPrincipal());
-        if (user == null) {
-            return this.failResponseBody(ResponseCode.USER_NOT_EXIST);
-        }
         post.setUser(user);
-        Serializable result = postService.save(post);
-        if (result == null) {
+        Serializable result;
+        try {
+            result = postService.save(post);
+        } catch (DataIntegrityViolationException e) {
             return this.failResponseBody(ResponseCode.ADD_DATA_IS_EXIST);
         }
         return this.successResponseBody(result);

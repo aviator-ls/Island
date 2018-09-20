@@ -88,6 +88,17 @@ public class User extends BaseEntity {
     @JoinTable(name = "t_user_post_collect", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "post_id"))
     private Set<Post> collectPostSet;// 收藏的文章
 
+    @ManyToMany(targetEntity = Ask.class)
+    @JoinTable(name = "t_user_ask_collect", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "ask_id"))
+    private Set<Ask> collectAskSet;// 收藏的问答
+
+    @ManyToMany(targetEntity = User.class)
+    @JoinTable(name = "t_user_user_follow", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "follower_id"))
+    private Set<User> followerSet;// 被关注的用户set(被这些用户关注)
+
+    @ManyToMany(targetEntity = User.class, mappedBy = "followerSet")
+    private Set<User> followUserSet;// 关注的用户
+
     /* 安全模块 */
     @ManyToMany(targetEntity = Role.class, mappedBy = "userSet")
     private Set<Role> roleSet;

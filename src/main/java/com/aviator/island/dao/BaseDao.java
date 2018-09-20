@@ -43,7 +43,7 @@ public interface BaseDao<T> {
 
     T merge(T entity);
 
-    void initialize(T entity);
+    void initialize(Object entity);
 
     int executeUpdate(String hql, Map<String, Object> params);
 

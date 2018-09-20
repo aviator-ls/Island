@@ -14,6 +14,8 @@ import java.util.Set;
  */
 public interface BaseService<T> {
 
+    void initialize(Object entity);
+
     Serializable save(T entity);
 
     void remove(T entity);

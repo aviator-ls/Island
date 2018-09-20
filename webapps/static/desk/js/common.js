@@ -41,12 +41,12 @@ function importHeaderPage() {
 function afterHeaderPage() {
     $('#projectHome').attr('href', baseUrl).attr('target', '_self');
     $('#home').attr('href', baseUrl).attr('target', '_self');
-    $('#toPostList').attr('href', baseUrl + '/toPostList').attr('target', '_self');
-    $('#toAskList').attr('href', baseUrl + '/toAskList').attr('target', '_self');
+    $('#toPostList').attr('href', baseUrl + '/toPostList').attr('target', '_blank');
+    $('#toAskList').attr('href', baseUrl + '/toAskList').attr('target', '_blank');
     $('#toRegister').attr('href', baseUrl + '/toRegister').attr('target', '_self');
     $('#toLogin').attr('href', baseUrl + '/toLogin').attr('target', '_self');
-    $('#toPost').attr('href', baseUrl + '/toAddPost').attr('target', '_self');
-    $('#toAsk').attr('href', baseUrl + '/toAddAsk').attr('target', '_self');
+    $('#toPost').attr('href', baseUrl + '/toAddPost').attr('target', '_blank');
+    $('#toAsk').attr('href', baseUrl + '/toAddAsk').attr('target', '_blank');
     $('#toPost').hide();
     $('#toAsk').hide();
     $.ajax({
@@ -71,7 +71,7 @@ function afterHeaderPage() {
 function outLogin() {
     $.ajax({
         url: baseUrl + '/api/user/outLogin'
-    })
+    });
     window.open(baseUrl + '/index', '_self');
 }
 
@@ -241,10 +241,86 @@ function dialogModal(content, closeTime, callback) {
             '<div class="modal-dialog modal-lg" role="document"><div id="tooltipModelContent" class="modal-content">' +
             '<div class="modal-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
             '<span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="gridSystemModalLabel">提示</h4></div>' +
-            '<div class="modal-body clear">' + content + '</div></div></div></div>'
+            '<div class="modal-body clear" id="tooltipModelContentMsg">' + content + '</div></div></div></div>'
         $('body').append(modelHtml);
     }
     var tag = $('#tooltipModel');
+    $('#tooltipModelContentMsg').text(content);
+    tag.modal('show');
+    var time = 1500;
+    if (isNotBlank(closeTime)) {
+        time = closeTime;
+    }
+    setTimeout(function () {
+        tag.modal('hide');
+        if (isFunction(callback)) {
+            callback();
+        }
+    }, time);
+}
+
+// 提示框弹出，定时消失
+function dialogModalSuccess(content, closeTime, callback) {
+    if (isBlank($('#tooltipModelSuccess'))) {
+        var modelHtml = '<div id="tooltipModelSuccess" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">' +
+            '<div class="modal-dialog modal-lg" role="document"><div id="tooltipModelSuccessContent" class="modal-content">' +
+            '<div class="modal-header myModal-success-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+            '<span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="gridSystemModalLabel">提示</h4></div>' +
+            '<div class="modal-body clear" id="tooltipModelSuccessContentMsg">' + content + '</div></div></div></div>'
+        $('body').append(modelHtml);
+    }
+    var tag = $('#tooltipModelSuccess');
+    $('#tooltipModelSuccessContentMsg').text(content);
+    tag.modal('show');
+    var time = 1500;
+    if (isNotBlank(closeTime)) {
+        time = closeTime;
+    }
+    setTimeout(function () {
+        tag.modal('hide');
+        if (isFunction(callback)) {
+            callback();
+        }
+    }, time);
+}
+
+// 提示框弹出，定时消失
+function dialogModalInfo(content, closeTime, callback) {
+    if (isBlank($('#tooltipModelInfo'))) {
+        var modelHtml = '<div id="tooltipModelInfo" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">' +
+            '<div class="modal-dialog modal-lg" role="document"><div id="tooltipModelInfoContent" class="modal-content">' +
+            '<div class="modal-header myModal-info-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+            '<span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="gridSystemModalLabel">提示</h4></div>' +
+            '<div class="modal-body clear" id="tooltipModelInfoContentMsg">' + content + '</div></div></div></div>'
+        $('body').append(modelHtml);
+    }
+    var tag = $('#tooltipModelInfo');
+    $('#tooltipModelInfoContentMsg').text(content);
+    tag.modal('show');
+    var time = 1500;
+    if (isNotBlank(closeTime)) {
+        time = closeTime;
+    }
+    setTimeout(function () {
+        tag.modal('hide');
+        if (isFunction(callback)) {
+            callback();
+        }
+    }, time);
+}
+
+// 提示框弹出，定时消失
+function dialogModalError(content, closeTime, callback) {
+    if (isBlank($('#tooltipModelError'))) {
+        var modelHtml = '<div id="tooltipModelError" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel">' +
+            '<div class="modal-dialog modal-lg" role="document"><div id="tooltipModelErrorContent" class="modal-content">' +
+            '<div class="modal-header myModal-error-header"><button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+            '<span aria-hidden="true">&times;</span></button><h4 class="modal-title" id="gridSystemModalLabel">提示</h4></div>' +
+            '<div class="modal-body clear" id="tooltipModelErrorContentMsg">' + content + '</div></div></div></div>'
+        $('body').append(modelHtml);
+    }
+    var tag = $('#tooltipModelError');
+    $('#tooltipModelErrorContentMsg').text(content);
     tag.modal('show');
     var time = 1500;
     if (isNotBlank(closeTime)) {
@@ -277,7 +353,7 @@ function ajaxGet(url, callback) {
                 }
             } else {
                 var msg = res.responseMsg;
-                dialogModal(msg, 2000);
+                dialogModalError(msg, 2000);
             }
         }
     });
@@ -298,7 +374,7 @@ function ajaxPost(url, data, callback) {
                 }
             } else {
                 var msg = res.responseMsg;
-                dialogModal(msg, 1500);
+                dialogModalError(msg, 1500);
             }
         }
     });

@@ -42,7 +42,9 @@ public class PostServiceImpl extends AbstractBaseService<Post> implements PostSe
     public Page<Post> findPageListHot(SearchPage searchPage) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("views", ConfigUtil.getConfigValue(Constants.CONFIG.HOT_POST_VIEW, Constants.CONFIG_DEFAULT.HOT_POST_VIEW));
-        CriteriaBuilder.DetachedCriteriaBuilder builder = CriteriaBuilder.newDetachedCriteriaBuilder(this.entityClass).andConditional(params, SearchConditional.GE);
+        Map<String, Object> paramsAnd = Maps.newHashMap();
+        paramsAnd.put("isOpen", 1);
+        CriteriaBuilder.DetachedCriteriaBuilder builder = CriteriaBuilder.newDetachedCriteriaBuilder(this.entityClass).andConditional(params, SearchConditional.GE).andConditional(paramsAnd, SearchConditional.EQ);
         return this.findPageListByCondition(searchPage, builder, null);
     }
 
@@ -50,17 +52,18 @@ public class PostServiceImpl extends AbstractBaseService<Post> implements PostSe
     public Page<Post> findPageListBoutique(SearchPage searchPage) {
         Map<String, Object> params = Maps.newHashMap();
         params.put("boutique", 1);
+        params.put("isOpen", 1);
         searchPage.setSearchAndParams(params);
         return this.findPageListByCondition(searchPage);
     }
 
     @Override
     public Page<Post> findPageListByKeyword(String keyword, SearchPage searchPage) {
-        Map<String, Object> params = null;
+        Map<String, Object> params = Maps.newHashMap();
         if (StringUtils.isNotBlank(keyword)) {
-            params = Maps.newHashMap();
             params.put("title", keyword);
         }
+        params.put("isOpen", 1);
         return this.findPageListByKeyword(searchPage, params);
     }
 

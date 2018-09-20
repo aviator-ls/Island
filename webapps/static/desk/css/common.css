@@ -56,3 +56,15 @@ h2 {
     width: 32px;
     height: 32px;
 }
+
+.myModal-success-header{
+    background-color:#5bc0de;
+}
+
+.myModal-info-header{
+    background-color:#337ab7;
+}
+
+.myModal-error-header{
+    background-color:#d0615a;
+}

@@ -103,7 +103,7 @@ public abstract class AbstractBaseDao<T> implements BaseDao<T> {
      * @param entity
      */
     @Override
-    public void initialize(T entity) {
+    public void initialize(Object entity) {
         this.hibernateTemplate.initialize(entity);
     }
 

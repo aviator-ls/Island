@@ -11,6 +11,7 @@ import com.aviator.island.service.PostSpecialService;
 import com.aviator.island.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,13 +35,9 @@ public class PostSpecialApiController extends AbstractBaseController {
     @GetMapping("/list/user")
     public ResponseContent findListByUserId() {
         // 得到当前登录用户,作为创建用户
-        String userName = this.getPrincipal();
-        if (StringUtils.isBlank(userName)) {
-            return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
-        }
-        User user = userService.getUserByUserName(this.getPrincipal());
+        User user = this.getSessionUser();
         if (user == null) {
-            return this.failResponseBody(ResponseCode.USER_NOT_EXIST);
+            return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
         }
         List<PostSpecial> postSpecialList = postSpecialService.findListByUser(user);
         List<PostSpecialOutputDTO> result = this.convertListToOutputDTOList(postSpecialList, new PostSpecialOutputDTO());
@@ -60,8 +57,10 @@ public class PostSpecialApiController extends AbstractBaseController {
             return this.failResponseBody(ResponseCode.USER_NOT_EXIST);
         }
         postSpecial.setUser(user);
-        Serializable result = postSpecialService.save(postSpecial);
-        if (result == null) {
+        Serializable result;
+        try {
+            result = postSpecialService.save(postSpecial);
+        } catch (DataIntegrityViolationException e) {
             return this.failResponseBody(ResponseCode.ADD_DATA_IS_EXIST);
         }
         return this.successResponseBody(result);

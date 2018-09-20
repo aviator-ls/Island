@@ -2,6 +2,8 @@ package com.aviator.island.service.impl;
 
 import com.aviator.island.dao.BaseDao;
 import com.aviator.island.dao.UserDao;
+import com.aviator.island.entity.po.Ask;
+import com.aviator.island.entity.po.Post;
 import com.aviator.island.entity.sys.Resource;
 import com.aviator.island.entity.sys.Role;
 import com.aviator.island.entity.sys.User;
@@ -10,6 +12,7 @@ import com.aviator.island.service.UserService;
 import com.aviator.island.shiro.ShiroEncryptUserUtil;
 import com.aviator.island.utils.CriteriaBuilder;
 import com.aviator.island.utils.SearchConditional;
+import com.google.common.collect.Sets;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.criterion.DetachedCriteria;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -140,6 +143,24 @@ public class UserServiceImpl extends AbstractBaseService<User> implements UserSe
             return roleSet.stream().flatMap(role -> role.getResourceSet().stream().map(resource -> resource.getName())).collect(Collectors.toSet());
         }
         return null;
+    }
+
+    @Override
+    public void collectAskList(User user, List<Ask> askList) {
+        userDao.initialize(user.getCollectAskSet());
+        Set<Ask> askSet = Sets.newHashSet(askList);
+        askSet.addAll(user.getCollectAskSet());
+        user.setCollectAskSet(askSet);
+        userDao.update(user);
+    }
+
+    @Override
+    public void collectPostList(User user, List<Post> postList) {
+        userDao.initialize(user.getCollectPostSet());
+        Set<Post> postSet = Sets.newHashSet(postList);
+        postSet.addAll(user.getCollectPostSet());
+        user.setCollectPostSet(postSet);
+        userDao.update(user);
     }
 
     @Override

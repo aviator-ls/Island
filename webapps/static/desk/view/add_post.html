@@ -100,6 +100,7 @@
                     <div id="tagSet" class="modal-body clear">
                     </div>
                     <div class="modal-footer">
+                        <button type="button" class="btn btn-info" data-dismiss="modal" onclick="toAddTag()">新增标签</button>
                         <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
                         <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="saveTagSet()">保 存
                         </button>
@@ -142,6 +143,40 @@
             </div>
         </div>
 
+        <div class="modal fade bs-example-modal-lg" id="addTagModel" tabindex="-1" role="dialog"
+             aria-labelledby="新增标签">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">新增标签</h4>
+                    </div>
+                    <div class="modal-body clear">
+                        <div class="form-group">
+                            <div class="input-group">
+                                标签名称&nbsp<span style="color:red">*</span>&nbsp:
+                                <input type="text" id="tagName" class="form-control" placeholder="标签名称(必填)..."
+                                       data-toggle="tooltip"
+                                       data-placement="bottom"
+                                       title="标签名称为空">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="input-group">
+                                标签描述&nbsp:
+                                <input type="text" id="tagDesc" class="form-control" placeholder="标签描述">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">关 闭</button>
+                        <button type="button" class="btn btn-primary" onclick="addTag()">保 存</button>
+                    </div>
+                </div><!-- /.modal-content -->
+            </div>
+        </div>
+
     </div>
 </div><!-- container -->
 
@@ -179,7 +214,7 @@
                                 $('#summernote').summernote('insertImage', baseUrl + url, url.substr(url.lastIndexOf('/') + 1));
                             } else {
                                 var msg = res.responseMsg;
-                                dialogModal(msg, 2000);
+                                dialogModalError(msg, 2000);
                             }
                         }
                     });
@@ -229,7 +264,7 @@
                 if (isCheckedTag(tagId)) {
                     setHtml += ' checked ';
                 }
-                setHtml += '">&nbsp&nbsp<label for="' + tagId + '">' + tag.name + '</label>';
+                setHtml += '">&nbsp&nbsp<label for="' + tagId + '">' + tag.name + '</label>&nbsp&nbsp';
             });
             $('#tagSet').html(setHtml);
             $('#tagSet input').iCheck({
@@ -255,7 +290,7 @@
                     $('#boardList').html(listHtml);
                 } else {
                     var msg = res.responseMsg;
-                    dialogModal(msg, 2000);
+                    dialogModalError(msg, 2000);
                 }
             }
         });
@@ -370,6 +405,7 @@
         var tagsText = tagsTextTag.val();
         var source = sourceTag.val();
         var contentText = contentTag.summernote('code');
+        var isOpen = $('input[name="isOpen"]').val();
         if (isBlank(title)) {
             tooltipFade(titleTag);
             fade(titleTag);
@@ -396,15 +432,16 @@
                     boardId: boardType,
                     sourceType: sourceType,
                     source: source,
-                    tagIdSet: tagsStr.split(',')
+                    tagIdSet: tagsStr.split(','),
+                    isOpen: isOpen
                 }),
                 success: function (res) {
                     var code = res.responseCode;
                     if (code == '0000') {
-                        dialogModal('文章发布成功！', 1000, toPostList);
+                        dialogModalSuccess('文章发布成功！', 1000, toPostList);
                     } else {
                         var msg = res.responseMsg;
-                        dialogModal(msg, 2000);
+                        dialogModalError(msg, 2000);
                     }
                 }
             });
@@ -414,6 +451,33 @@
 
     var toPostList = function toPostList() {
         window.open(baseUrl + '/toPostList', '_self');
+    }
+
+    function toAddTag() {
+        $('#addTagModel').modal('show');
+    }
+
+    function addTag() {
+        var tagNameTag = $('#tagName');
+        var tagDescTag = $('#tagDesc');
+        var tagName = tagNameTag.val();
+        var taglDesc = tagDescTag.val();
+        if (isBlank(tagName)) {
+            tooltipFade(tagNameTag);
+            fade(tagNameTag);
+        } else {
+            var url = baseUrl + '/api/tag';
+            var data = {
+                name: tagName,
+                desc: taglDesc
+            };
+            ajaxPost(url, data, addTagSuccess);
+            $('#addTagModel').modal('hide');
+        }
+    }
+
+    var addTagSuccess = function () {
+        dialogModalSuccess('新增标签成功', 1000);
     }
 
 </script>

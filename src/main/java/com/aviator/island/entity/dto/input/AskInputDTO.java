@@ -1,7 +1,5 @@
 package com.aviator.island.entity.dto.input;
 
-import com.google.common.base.Converter;
-import com.google.common.collect.Sets;
 import com.aviator.island.entity.po.Ask;
 import com.aviator.island.entity.po.Board;
 import com.aviator.island.entity.po.Tag;
@@ -10,8 +8,11 @@ import com.aviator.island.exception.ParamsErrorException;
 import com.aviator.island.service.BoardService;
 import com.aviator.island.service.TagService;
 import com.aviator.island.utils.ComponentManager;
+import com.google.common.base.Converter;
+import com.google.common.collect.Sets;
 import lombok.Data;
 import lombok.experimental.Accessors;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -50,12 +51,15 @@ public class AskInputDTO extends BaseInputDTO<AskInputDTO, Ask> {
         protected Ask doForward(AskInputDTO askInputDTO) {
             Ask ask = new Ask();
             try {
+                askInputDTO.setTitle(askInputDTO.getTitle().trim());
                 BeanUtils.copyProperties(askInputDTO, ask);
-                Board board = (Board) ComponentManager.getComponent(BoardService.class).get(boardId);
-                if (board == null || !CollectionUtils.isEmpty(board.getChildBoardSet())) {
-                    throw new ParamsErrorException("board is null or not leaf");
+                if (StringUtils.isNotBlank(boardId)) {
+                    Board board = (Board) ComponentManager.getComponent(BoardService.class).get(boardId);
+                    if (board == null || !CollectionUtils.isEmpty(board.getChildBoardSet())) {
+                        throw new ParamsErrorException("board is null or not leaf");
+                    }
+                    ask.setBoard(board);
                 }
-                ask.setBoard(board);
                 if (!CollectionUtils.isEmpty(tagIdSet)) {
                     List<Tag> tagList = ComponentManager.getComponent(TagService.class).findListByIds(tagIdSet);
                     if (CollectionUtils.isEmpty(tagList) || tagList.size() != tagIdSet.size()) {

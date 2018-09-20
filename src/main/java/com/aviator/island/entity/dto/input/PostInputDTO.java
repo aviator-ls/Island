@@ -43,6 +43,8 @@ public class PostInputDTO extends BaseInputDTO<PostInputDTO, Post> {
     @Min(value = 1, message = "文章类型错误")
     private int sourceType;
 
+    private int isOpen = 1;// 是否公开 1:公开(默认) 2:不公开
+
     private String source;
 
     private String reference;

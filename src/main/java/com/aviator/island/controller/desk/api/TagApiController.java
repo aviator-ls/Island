@@ -8,9 +8,11 @@ import com.aviator.island.entity.dto.input.TagInputDTO;
 import com.aviator.island.entity.dto.output.TagOutputDTO;
 import com.aviator.island.entity.po.SearchPage;
 import com.aviator.island.entity.po.Tag;
+import com.aviator.island.entity.sys.User;
 import com.aviator.island.service.TagService;
 import com.aviator.island.utils.Page;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,11 +34,20 @@ public class TagApiController extends AbstractBaseController {
     @PostMapping("")
     public ResponseContent addTag(@Valid @RequestBody TagInputDTO tagInputDTO, BindingResult bindingResult) {
         Tag tag = tagInputDTO.converterTo();
-        Serializable result = tagService.save(tag);
-        if (result == null) {
+        // 得到当前登录用户,作为创建用户
+        User user = this.getSessionUser();
+        if (user == null) {
+            return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
+        }
+        tag.setCreateUser(user);
+        tag.setUpdateUser(user);
+        Serializable result;
+        try {
+            result = tagService.save(tag);
+        } catch (DataIntegrityViolationException e) {
             return this.failResponseBody(ResponseCode.ADD_DATA_IS_EXIST);
         }
-        return this.successResponseBody();
+        return this.successResponseBody(result);
     }
 
     @DeleteMapping("/{id}")

@@ -1,12 +1,14 @@
 package com.aviator.island.controller.desk.api;
 
-import com.google.common.collect.Sets;
 import com.aviator.island.constants.ResponseCode;
 import com.aviator.island.controller.desk.AbstractBaseController;
 import com.aviator.island.entity.ResponseContent;
+import com.aviator.island.entity.dto.input.CollectAskInputDTO;
 import com.aviator.island.entity.dto.input.CollectPostInputDTO;
+import com.aviator.island.entity.dto.input.FollowUserInputDTO;
 import com.aviator.island.entity.dto.input.UserInputDTO;
 import com.aviator.island.entity.dto.output.UserOutputDTO;
+import com.aviator.island.entity.po.Ask;
 import com.aviator.island.entity.po.LoginLog;
 import com.aviator.island.entity.po.Post;
 import com.aviator.island.entity.sys.User;
@@ -34,10 +36,10 @@ import java.util.List;
 public class UserApiController extends AbstractBaseController {
 
     @Autowired
-    private UserService<User> userService;
+    private LoginLogService<LoginLog> loginLogService;
 
     @Autowired
-    private LoginLogService<LoginLog> loginLogService;
+    private UserService<User> userService;
 
     @PostMapping("/register")
     public ResponseContent register(@Valid @RequestBody UserInputDTO userInputDTO, BindingResult validResult) {
@@ -97,25 +99,38 @@ public class UserApiController extends AbstractBaseController {
     }
 
     @PostMapping("/collect/post")
-    public ResponseContent collectPost(CollectPostInputDTO collectPostInputDTO) {
+    public ResponseContent collectPost(@Valid @RequestBody CollectPostInputDTO collectPostInputDTO, BindingResult validResult) {
         List<Post> postList = collectPostInputDTO.converterTo();
-        // 得到当前登录用户,作为创建用户
-        String userName = this.getPrincipal();
-        if (StringUtils.isBlank(userName)) {
+        // 得到当前用户
+        User user = this.getSessionUser();
+        if (user == null) {
             return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
         }
-        User user = userService.getUserByUserName(this.getPrincipal());
-        if (user == null) {
-            return this.failResponseBody(ResponseCode.USER_NOT_EXIST);
-        }
-        user.setCollectPostSet(Sets.newHashSet(postList));
-        userService.update(user);
+        userService.collectPostList(user, postList);
         return this.successResponseBody();
     }
 
-//    @PostMapping("/collect/ask")
-//    public ResponseContent collectAsk() {
-//
-//    }
+    @PostMapping("/collect/ask")
+    public ResponseContent collectAsk(@Valid @RequestBody CollectAskInputDTO collectAskInputDTO, BindingResult validResult) {
+        List<Ask> askList = collectAskInputDTO.converterTo();
+        // 得到当前用户
+        User user = this.getSessionUser();
+        if (user == null) {
+            return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
+        }
+        userService.collectAskList(user, askList);
+        return this.successResponseBody();
+    }
 
+    @PostMapping("/follow")
+    public ResponseContent follow(@Valid @RequestBody FollowUserInputDTO followUserInputDTO, BindingResult validResult) {
+        List<User> userList = followUserInputDTO.converterTo();
+        // 得到当前用户
+        User user = this.getSessionUser();
+        if (user == null) {
+            return this.failResponseBody(ResponseCode.USER_NOT_LOGIN);
+        }
+        // TODO: 2018/9/20 userService增加follow方法
+        return this.successResponseBody();
+    }
 }

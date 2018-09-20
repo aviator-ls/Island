@@ -3,12 +3,16 @@ package com.aviator.island.controller.desk;
 import com.aviator.island.constants.ResponseCode;
 import com.aviator.island.entity.ResponseContent;
 import com.aviator.island.entity.dto.output.BaseOutputDTO;
+import com.aviator.island.entity.sys.User;
+import com.aviator.island.service.UserService;
 import com.aviator.island.utils.ConvertUtil;
 import com.aviator.island.utils.Page;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,6 +23,9 @@ import java.util.List;
  */
 @Slf4j
 public abstract class AbstractBaseController {
+
+    @Autowired
+    private UserService<User> userService;
 
     public String getPrincipal() {
         Subject subject = SecurityUtils.getSubject();
@@ -31,6 +38,19 @@ public abstract class AbstractBaseController {
             return subject.getSession();
         }
         return null;
+    }
+
+    /**
+     * 得到当前用户
+     *
+     * @return
+     */
+    public User getSessionUser() {
+        String userName = this.getPrincipal();
+        if (StringUtils.isBlank(userName)) {
+            return null;
+        }
+        return userService.getUserByUserName(userName);
     }
 
     public String getRealPath(HttpServletRequest request, String path) {
